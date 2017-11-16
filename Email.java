@@ -30,7 +30,6 @@ public class Email {
     Boolean isSpam;
     public Email(Message mensaje, Boolean spam) throws IOException
     {
-
         //Pone el ID
         id= mensaje.getId();
         //Pone el Body
@@ -38,8 +37,27 @@ public class Email {
         body = new String(bodyBytes, "UTF-8");
         // Pone el Header
         header = mensaje.getPayload().getHeaders().toString();
-
         //Pregunta si es spam
         isSpam = spam;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public Boolean getSpam() {
+        return isSpam;
     }
 }

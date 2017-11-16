@@ -26,6 +26,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 
+
 public class Quickstart {
     /** Application name. */
     private static final String APPLICATION_NAME =
@@ -102,12 +103,15 @@ public class Quickstart {
                 .build();
     }
 
+
     public static void main(String[] args) throws IOException {
         // Build a new authorized API client service.
         Gmail service = getGmailService();
 
-        // Print the labels in the user's account.
-        String user = "me";
+        GmailConnector conector = new GmailConnector();
+
+       conector.deleteCredentials();
+/*       String user = "me";
         String Query ="in:Spam";
 
         ListMessagesResponse response = service.users().messages().list(user).setQ(Query).execute();
@@ -123,44 +127,17 @@ public class Quickstart {
             }
         }
 
-        String todosms = "hola bailin y su cantones";
-        int contador=0;
             for (Message message : messages) {
-                ++contador;
+
+
                 Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
                 byte[] bodyBytes = Base64.decodeBase64(mensaje.getPayload().getParts().get(0).getBody().getData().trim().toString()); // get body
                 String body = new String(bodyBytes, "UTF-8");
-                todosms += body;
                 // System.out.println(mensaje.);
                 System.out.println(body);
         }
 
-        //System.out.println(doc.toString());
-            //System.out.println(todosms);
-
-        ArrayList<String> palabras = new ArrayList<>();
-        ArrayList<String> frecuencia = new ArrayList<>();
-        Scanner sc = new Scanner(todosms).useDelimiter(" ");
-        String word = "";
-        while(sc.hasNext()){
-            word = sc.next();
-            if(!palabras.contains(word)){
-                palabras.add(word);
-            }
-            word = "";
-        }
-        System.out.println(palabras.size());
-        //System.out.println(palabras.toString());
-       /**
-        for (Message message : messages) {
-            ++contador;
-            Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
-            System.out.println(mensaje.);
-        }
-        System.out.print(contador);
-
-**/
-
+*/
     }
     }
 

@@ -118,8 +118,10 @@ public class GmailConnector {
                 }
             }
             for (Message message : messages) {
+
                 Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
                 emails.add(new Email(mensaje, true));
+                System.out.println("hola");
             }
             return emails;
         }
@@ -166,62 +168,17 @@ public class GmailConnector {
             }
         }
         for (Message message : messages) {
-            Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
-            emails.add(new Email(mensaje, true));
+
+                Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
+                emails.add(new Email(mensaje, true));
         }
         return emails;
     }
+public void deleteCredentials()
+{
+ DATA_STORE_DIR.delete();
+}
 
-        public void main(String[] args) throws IOException {
-            // Build a new authorized API client service.
-            service = getGmailService();
-
-            // Print the labels in the user's account.
-            String user = "me";
-            String Query ="in:Spam";
-
-            ListMessagesResponse response = service.users().messages().list(user).setQ(Query).execute();
-            List<Message> messages = new ArrayList<Message>();
-            while (response.getMessages() != null) {
-                messages.addAll(response.getMessages());
-                if (response.getNextPageToken() != null) {
-                    String pageToken = response.getNextPageToken();
-                    response = service.users().messages().list(user).setQ(Query)
-                            .setPageToken(pageToken).execute();
-                } else {
-                    break;
-                }
-            }
-
-            String todosms = "hola bailin y su cantones";
-            int contador=0;
-            for (Message message : messages) {
-                ++contador;
-                Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
-                byte[] bodyBytes = Base64.decodeBase64(mensaje.getPayload().getParts().get(0).getBody().getData().trim().toString()); // get body
-                String body = new String(bodyBytes, "UTF-8");
-                todosms += body;
-                // System.out.println(mensaje.);
-                System.out.println(body);
-            }
-
-            //System.out.println(doc.toString());
-            //System.out.println(todosms);
-
-            ArrayList<String> palabras = new ArrayList<>();
-            ArrayList<String> frecuencia = new ArrayList<>();
-            Scanner sc = new Scanner(todosms).useDelimiter(" ");
-            String word = "";
-            while(sc.hasNext()){
-                word = sc.next();
-                if(!palabras.contains(word)){
-                    palabras.add(word);
-                }
-                word = "";
-            }
-            System.out.println(palabras.size());
-        }
-        
     }
 
 
