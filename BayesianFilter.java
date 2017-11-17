@@ -43,10 +43,10 @@ public class BayesianFilter {
         double numerator = 1.0;
         double denominator1 = 1.0;
         for (String key : keys) {
-            if (listaSpam.get(key)) {
+            if (listaSpam.containsKey(key)) {
                 numerator = numerator * listaSpam.get(key).getFrequency();
             }
-            if (listaNotSpam.get(key)) {
+            if (listaNotSpam.containsKey(key)) {
                 denominator1 = denominator1 * listaNotSpam.get(key).getFrequency();
             }
         }
@@ -94,7 +94,7 @@ public class BayesianFilter {
                 }
             }
         }
-        Set<String> keys = listaNotSpam.keySet();
+        keys = listaNotSpam.keySet();
         for (String key : keys) {
             int count = listaNotSpam.get(key).count;
             double f = count * 1.0 / spam.size() * 1.0;
