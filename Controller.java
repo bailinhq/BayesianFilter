@@ -3,7 +3,7 @@ public class Controller {
     private GmailConnector connector;
     private BayesianFilter filter;
 
-    Controller (Menu m)
+    public Controller (Menu m)
     {
        menu = m;
     }
