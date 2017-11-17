@@ -58,8 +58,8 @@ public class GmailConnector {
             }
         }
 
-        public GmailConnector(){
-
+        public GmailConnector() throws IOException{
+            service = getGmailService();
         }
 
         /**
@@ -100,10 +100,9 @@ public class GmailConnector {
                     .build();
         }
 
-        public List<Email> getSpam() throws IOException{
+        public List<Email> getSpam(int cantidad) throws IOException{
             String user = "me";
             String Query ="in:Spam";
-            service = getGmailService();
             ListMessagesResponse response = service.users().messages().list(user).setQ(Query).execute();
             List<Email> emails = new ArrayList<Email>();
             List<Message> messages = new ArrayList<Message>();
@@ -117,11 +116,16 @@ public class GmailConnector {
                     break;
                 }
             }
+            int contador = 0;
             for (Message message : messages) {
-
                 Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
-                emails.add(new Email(mensaje, true));
-                System.out.println("hola");
+                if(mensaje.getPayload().getMimeType().equals("multipart/alternative")) {
+                    emails.add(new Email(mensaje, true));
+                    contador++;
+                }
+                if(contador == cantidad){
+                    break;
+                }
             }
             return emails;
         }
@@ -129,7 +133,6 @@ public class GmailConnector {
         public List<Email> getNewMail() throws IOException{
         String user = "me";
         String Query ="in:UNREAD";
-        service = getGmailService();
         ListMessagesResponse response = service.users().messages().list(user).setQ(Query).execute();
         List<Email> emails = new ArrayList<Email>();
         List<Message> messages = new ArrayList<Message>();
@@ -150,10 +153,9 @@ public class GmailConnector {
         return emails;
     }
 
-        public List<Email> getNotSpam() throws IOException{
+        public List<Email> getNotSpam(int cantidad) throws IOException{
         String user = "me";
-        String Query ="in:INBOX";
-        service = getGmailService();
+        String Query ="in:INBOX"; 
         ListMessagesResponse response = service.users().messages().list(user).setQ(Query).execute();
         List<Email> emails = new ArrayList<Email>();
         List<Message> messages = new ArrayList<Message>();
@@ -167,18 +169,28 @@ public class GmailConnector {
                 break;
             }
         }
+        int contador = 0;
         for (Message message : messages) {
-
-                Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
+            Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
+            if(mensaje.getPayload().getMimeType().equals("multipart/alternative")) {
                 emails.add(new Email(mensaje, true));
+                contador++;
+            }
+            if (contador == cantidad){
+                break;
+            }
         }
         return emails;
     }
-public void deleteCredentials()
-{
- DATA_STORE_DIR.delete();
-}
 
+    public static void main(String[] args) throws IOException {
+        GmailConnector conector = new GmailConnector();
+        List<Email> emails = conector.getSpam(10);
+        System.out.println(emails.get(1).getBody());
+        emails = conector.getNotSpam(5);
+        System.out.println(emails.get(1).getBody());
     }
+
+}
 
 
