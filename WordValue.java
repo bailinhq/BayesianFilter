@@ -1,12 +1,25 @@
 public class WordValue {
-    private double frecuency;
-    private double probability;
-    private String word;
+    public String word;
+    public int frequency;
+    public double probabiliy;
 
-    WordValue (double f, double p, String s)
-    {
-        frecuency=f;
-        probability=p;
-        word= s;
+    public WordValue(String w, int f, double p){
+        word = w;
+        frequency = f;
+        probabiliy = p;
+
     }
+
+    public String getWord() {
+        return word;
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public double getProbabiliy() {
+        return probabiliy;
+    }
+
 }
