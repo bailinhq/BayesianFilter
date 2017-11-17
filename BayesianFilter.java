@@ -24,14 +24,29 @@ public class BayesianFilter {
 
     }
 
-    private double calculateBayProb() {
-
-        return 0.0;
-    }
-
-    private double calculateProb(double prob, double thresold) {
-
-        return 0.0;
+    private double calculateBayProb(Email email) {
+        Pattern pattern = Pattern.compile("(?<!\\S)[a-z]+(?!\\S)");
+        Matcher matcher = pattern.matcher(email.getBody());
+        HashMap<String, String> words = new HashMap<String,String>();
+        while (matcher.find()) {
+            String word = email.getBody().substring(matcher.start(), matcher.end());
+            if (!words.containsKey(word)){
+                words.put(word,word);
+            }
+        }
+        Set<String> keys = words.keySet();
+        double numerator = 1.0;
+        double denominator1 = 1.0; 
+        for(String key: keys){
+            if(listaSpam.get(key)){
+                numerator = numerator * listaSpam.get(key).getFrequency();
+            }
+            if(listaNotSpam.get(key)){
+                denominator1 = denominator1 * listaNotSpam.get(key).getFrequency();
+            }
+        }
+        double probability = numerator/(denominator1+numerator);
+        return probability;
     }
 
     private void setFrequency(List<Email> spam, List<Email> notSpam) {
