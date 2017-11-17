@@ -147,7 +147,7 @@ public class GmailConnector {
         return emails;
     }
 
-    public List<Email> getNewMail(int cantidad) throws IOException {
+    public List<Email> getNewMail() throws IOException {
         String user = "me";
         String Query = "in:UNREAD";
         ListMessagesResponse response = service.users().messages().list(user).setQ(Query).execute();
@@ -163,15 +163,10 @@ public class GmailConnector {
                 break;
             }
         }
-        int contador = 0;
         for (Message message : messages) {
             Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
             if (mensaje.getPayload().getMimeType().equals("multipart/alternative")) {
                 emails.add(new Email(mensaje, true));
-                contador++;
-            }
-            if (contador == cantidad) {
-                break;
             }
         }
         return emails;
@@ -218,11 +213,9 @@ public class GmailConnector {
         GmailConnector conector = new GmailConnector();
         List<Email> emails = conector.getSpam(10);
         System.out.println(emails.get(1).getBody());
-        emails = conector.getNotSpam(5);
+        emails = conector.getNewMail();
         System.out.println(emails.get(1).getBody());
-        emails = conector.getNewMail(5);
-        System.out.println(emails.get(1).getBody());
-        deleteCredentials();
+        DataSaver data = new DataSaver();
     }
 
 }
