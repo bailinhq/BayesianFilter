@@ -14,10 +14,12 @@ import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.nio.file.*;
 
 public class GmailConnector {
 
@@ -112,6 +114,7 @@ public class GmailConnector {
         return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
+
     }
 
     public List<Email> getSpam(int cantidad) throws IOException {
@@ -204,6 +207,13 @@ public class GmailConnector {
         return emails;
     }
 
+    public static void deleteCredentials() throws IOException{
+        String path = System.getProperty("user.home") + "//.credentials/gmail-java-quickstart//StoredCredential";
+        File data = new File(path);
+        data.delete();
+        //Files.deleteIfExists(DATA_STORE_DIR.toPath());
+        //boolean delete = DATA_STORE_DIR.delete();
+    }
     public static void main(String[] args) throws IOException {
         GmailConnector conector = new GmailConnector();
         List<Email> emails = conector.getSpam(10);
@@ -212,6 +222,7 @@ public class GmailConnector {
         System.out.println(emails.get(1).getBody());
         emails = conector.getNewMail(5);
         System.out.println(emails.get(1).getBody());
+        deleteCredentials();
     }
 
 }
