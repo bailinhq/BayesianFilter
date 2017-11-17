@@ -19,9 +19,8 @@ public class Ds {
 
         Set<String> keys = spam.keySet();
         for (String key: keys){
-            String palabra = spam.get(key).toString();
             String saludo;
-            saludo = (String) palabra;
+            saludo = key;
             try {
                 File archivo = new File("text.txt");
                 FileWriter escribir = new FileWriter(archivo, true);
