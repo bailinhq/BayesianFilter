@@ -12,7 +12,13 @@ public class Controller {
 
     public Controller ()
     {
-        menu = new Menu(this);
+        try {
+            menu = new Menu(this);
+            connector = new GmailConnector();
+            filter = new BayesianFilter();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void configure()
