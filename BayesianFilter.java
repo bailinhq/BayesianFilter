@@ -1,5 +1,6 @@
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,16 +8,16 @@ public class BayesianFilter {
     private double spamThresold = 0.9;
     private double spamProb = 0.3;
     private int trainingSize;
-    private Hashtable<String, WordValue> listaNotSpam;
-    private Hashtable<String, WordValue> listaSpam;
+    private HashMap<String, WordValue> listaNotSpam;
+    private HashMap<String, WordValue> listaSpam;
 
     public BayesianFilter(){
-        listaNotSpam = new Hashtable<String, WordValue>();
-        listaSpam = new Hashtable<String, WordValue>();
+        listaNotSpam = new HashMap<String, WordValue>();
+        listaSpam = new HashMap<String, WordValue>();
     }
 
     public void training(List<Email> spam, List<Email> notSpam) {
-
+        setFrequency(spam, notSpam);
     }
 
     public void isSpam(List<Email> newMessage) {
@@ -34,13 +35,52 @@ public class BayesianFilter {
     }
 
     private void setFrequency(List<Email> spam, List<Email> notSpam) {
+        double word_counter = 0.0;
         for(int i = 0; i < spam.size(); i++){
             String body = spam.get(i).body;
-            Pattern pattern = Pattern.compile("[\\w']+");
+            Pattern pattern = Pattern.compile("(?<!\\S)[a-z]+(?!\\S)");
             Matcher matcher = pattern.matcher(body);
             while (matcher.find()){
-                System.out.println(body.substring(matcher.start(), matcher.end()));
+                String word = body.substring(matcher.start(), matcher.end());
+                word_counter++;
+                if(!listaSpam.containsKey(word)){
+                    listaSpam.put(word, new WordValue(word,0,0));
+                    listaSpam.get(word).increaseCount();
+                } else{
+                    listaSpam.get(word).increaseCount();
+                }
             }
+        }
+        Set<String> keys = listaSpam.keySet();
+        for (String key: keys){
+            int count = listaSpam.get(key).count;
+            double f = count*1.0/spam.size()*1.0;
+            listaSpam.get(key).setFrequency(f);
+            double p = count*1.0/word_counter;
+            listaSpam.get(key).setProbabiliy(p);
+        }
+        for(int i = 0; i < notSpam.size(); i++){
+            String body = notSpam.get(i).body;
+            Pattern pattern = Pattern.compile("(?<!\\S)[a-z]+(?!\\S)");
+            Matcher matcher = pattern.matcher(body);
+            while (matcher.find()){
+                String word = body.substring(matcher.start(), matcher.end());
+                word_counter++;
+                if(!listaNotSpam.containsKey(word)){
+                    listaNotSpam.put(word, new WordValue(word,0,0));
+                    listaNotSpam.get(word).increaseCount();
+                } else{
+                    listaNotSpam.get(word).increaseCount();
+                }
+            }
+        }
+        Set<String> keys = listaNotSpam.keySet();
+        for (String key: keys){
+            int count = listaNotSpam.get(key).count;
+            double f = count*1.0/spam.size()*1.0;
+            listaNotSpam.get(key).setFrequency(f);
+            double p = count*1.0/word_counter;
+            listaNotSpam.get(key).setProbabiliy(p);
         }
     }
 
@@ -56,11 +96,11 @@ public class BayesianFilter {
         return trainingSize;
     }
 
-    public Hashtable<String, WordValue> getListaNotSpam() {
+    public HashMap<String, WordValue> getListaNotSpam() {
         return listaNotSpam;
     }
 
-    public Hashtable<String, WordValue> getListaSpam() {
+    public HashMap<String, WordValue> getListaSpam() {
         return listaSpam;
     }
 
