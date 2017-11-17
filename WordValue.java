@@ -34,10 +34,9 @@ public class WordValue {
     public void increaseCount(){
         count++;
     }
-    
+
     public String toString(){
-        String string = "" + word + " " + frequency + " " + probabiliy;
-        System.out.println(string);
+        String string = "" + word + " " + frequency + " " + probabiliy; 
         return string;
     }
 }
