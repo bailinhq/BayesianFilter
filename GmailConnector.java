@@ -73,9 +73,12 @@ public class GmailConnector {
     }
 
     public GmailConnector() throws IOException {
-        service = getGmailService();
+        
     }
 
+    public void logIn() throws IOException{
+        service = getGmailService();
+    }
     /**
      * Creates an authorized Credential object.
      *
