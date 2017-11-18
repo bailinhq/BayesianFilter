@@ -1,55 +1,50 @@
-import java.lang.ref.SoftReference;
+import java.io.*;
 import java.util.HashMap;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
-public class Ds {
-    private String fileName;
-    private String filePath;
+public class DataSaver {
 
-    public void Save (HashMap spam, HashMap notSpam)
-    {
+    public FileWriter spam;
+    public FileWriter notSpam;
+    public PrintWriter spamWriter;
+    public PrintWriter writer;
 
+    public DataSaver(){
+        try {
+            File file = new File(
+                    System.getProperty("user.home")+ "\\spam.txt");
+            spam = new FileWriter(file);
+            notSpam = new FileWriter("notSpam.txt");
+            spamWriter = new PrintWriter(spam);
+            writer = new PrintWriter(notSpam);
+        } catch (IOException e){
+
+        }
+    }
+
+    public void saveSpam(HashMap<String, WordValue> spam){
         Set<String> keys = spam.keySet();
-        for (String key: keys){
-            String saludo;
-            saludo = key;
-            try {
-                File archivo = new File("text.txt");
-                FileWriter escribir = new FileWriter(archivo, true);
-                escribir.write(saludo+"\n");
-                escribir.close();
-            } catch (Exception e) {
-                System.out.println("Error al escribir");
-            }
+        for (String key : keys){
+            spamWriter.println(spam.get(key).toString());
         }
+        spamWriter.close();
     }
-    public void load ()
-    {
-        String texto="";
-        try
-        {
-            FileReader lector=new FileReader("texto.txt");
-            BufferedReader contenido=new BufferedReader(lector);
-            while((texto=contenido.readLine())!=null)
-            {
-                System.out.println(texto);
-            }
-        }
-        catch(Exception e)
-        {
-            System.out.println("Error al leer");
-        }
-    }
-    public void delete ()
-    {
 
+    public void saveNotSpam(HashMap<String, WordValue> notSpam){
+        Set<String> keys = notSpam.keySet();
+        for (String key : keys){
+            writer.println(notSpam.get(key).toString());
+        }
+        writer.close();
+    }
+
+    public void clearSpam(){
+        File data = new File(System.getProperty("user.home") + "\\spam.txt");
+        data.delete();
+    }
+
+    public void clearNotSpam(){
+        File data = new File(System.getProperty("user.home") + "\\notSpam.txt");
+        data.delete();
     }
 }
