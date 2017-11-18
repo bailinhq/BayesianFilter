@@ -1,6 +1,7 @@
 import com.google.api.client.auth.oauth2.Credential;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -59,7 +60,16 @@ public class Controller {
     public void getNewMail()
     {
         try {
-            connector.getNewMail();
+            List<Email> newEmails = connector.getNewMail();
+            filter.isSpam(newEmails);
+            for (Email email : newEmails){
+                if(email.isSpam){
+                    System.out.println("IS SPAM");
+                } else{
+                    System.out.println("NOT SPAM");
+                }
+                System.out.println(email.getBody());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,7 +77,7 @@ public class Controller {
     public void train()
     {
         try {
-            int cantidad= filter.getTrainingSize();
+            int cantidad = filter.getTrainingSize();
             filter.training(connector.getSpam(cantidad),connector.getNotSpam(cantidad));
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,7 +94,7 @@ public class Controller {
     public void login()
     {
         try {
-            GmailConnector.authorize();
+            connector.logIn();
         } catch (IOException e) {
             e.printStackTrace();
         }
