@@ -47,7 +47,7 @@ public class Email {
             byte[] bodyBytes = Base64.decodeBase64(mensaje.getPayload().getBody().getData()); // get body
             body = new String(bodyBytes);
             org.jsoup.nodes.Document doc = Jsoup.parse(body);
-            body = doc.body().text(); 
+            body = doc.body().text();
         }
         // Pone el Header
         header = mensaje.getPayload().getHeaders().toString();
