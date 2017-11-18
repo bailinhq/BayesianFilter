@@ -13,7 +13,10 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.DocumentType;
 
+import javax.swing.text.Document;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,10 +34,21 @@ public class Email {
     public Email(Message mensaje, Boolean spam) throws IOException
     {
         //Pone el ID
-        id= mensaje.getId();
+        id = mensaje.getId();
         //Pone el Body
-        byte[] bodyBytes = Base64.decodeBase64(mensaje.getPayload().getParts().get(0).getBody().getData().trim().toString()); // get body
-        body = new String(bodyBytes, "UTF-8");
+        String type = mensaje.getPayload().getMimeType();
+        if(type.equals("multipart/alternative")) {
+            byte[] bodyBytes = Base64.decodeBase64(mensaje.getPayload().getParts().get(0).getBody().getData().trim().toString()); // get body
+            body = new String(bodyBytes, "UTF-8");
+        } else if(type.equals("text/plain")){
+            byte[] bodyBytes = Base64.decodeBase64(mensaje.getPayload().getBody().getData()); // get body
+            body = new String(bodyBytes, "UTF-8");
+        } else if(type.equals("text/html")){
+            byte[] bodyBytes = Base64.decodeBase64(mensaje.getPayload().getBody().getData()); // get body
+            body = new String(bodyBytes);
+            org.jsoup.nodes.Document doc = Jsoup.parse(body);
+            body = doc.body().text(); 
+        }
         // Pone el Header
         header = mensaje.getPayload().getHeaders().toString();
         //Pregunta si es spam
