@@ -11,9 +11,9 @@ public class Menu {
     {
         boolean seguir= true;
         Scanner scan= new Scanner(System.in);
-        int num= scan.nextInt();
         while(seguir != true){
             System.out.println("1)Configure \n2)Show Data\n3)Get new mail\n4)Train\n5)displayWords\n6)Logout\n7)Log In\n8)exit");
+            int num= scan.nextInt();
             switch(num){
                 case 1:
                     control.configure();
@@ -28,7 +28,7 @@ public class Menu {
                     control.train();
                     break;
                 case 5:
-                    this.displayWords();
+                    control.showData();
                     break;
                 case 6:
                     control.logout();
@@ -43,9 +43,5 @@ public class Menu {
 
             }
         }
-    }
-    public void displayWords ()
-    {
-
     }
 }
