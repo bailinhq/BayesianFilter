@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class BayesianFilter {
     private double spamThresold = 0.9;
     private double spamProb = 0.3;
-    private int trainingSize;
+    private int trainingSize = 50;
     private HashMap<String, WordValue> listaNotSpam;
     private HashMap<String, WordValue> listaSpam;
 
@@ -25,6 +25,10 @@ public class BayesianFilter {
             double probability = this.calculateBayProb(newMessages.get(i));
             if(probability > spamThresold){
                 newMessages.get(i).isSpam = true;
+                System.out.println("es spam");
+            } else{
+                System.out.println("not spam");
+                System.out.println(newMessages.get(i).getBody());
             }
         }
     }
@@ -83,14 +87,16 @@ public class BayesianFilter {
             String body = notSpam.get(i).body;
             Pattern pattern = Pattern.compile("(?<!\\S)[a-z]+(?!\\S)");
             Matcher matcher = pattern.matcher(body);
-            while (matcher.find()) {
-                String word = body.substring(matcher.start(), matcher.end());
-                word_counter++;
-                if (!listaNotSpam.containsKey(word)) {
-                    listaNotSpam.put(word, new WordValue(word, 0, 0));
-                    listaNotSpam.get(word).increaseCount();
-                } else {
-                    listaNotSpam.get(word).increaseCount();
+            if(!body.equals("")) {
+                while (matcher.find()) {
+                    String word = body.substring(matcher.start(), matcher.end());
+                    word_counter++;
+                    if (!listaNotSpam.containsKey(word)) {
+                        listaNotSpam.put(word, new WordValue(word, 0, 0));
+                        listaNotSpam.get(word).increaseCount();
+                    } else {
+                        listaNotSpam.get(word).increaseCount();
+                    }
                 }
             }
         }
