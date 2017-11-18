@@ -214,18 +214,9 @@ public class GmailConnector {
     }
     public static void main(String[] args) throws IOException {
         GmailConnector conector = new GmailConnector();
-        List<Email> spam = conector.getSpam(10);
-        //System.out.println(spam.get(1).getBody());
-        List<Email> notspam = conector.getNewMail();
-        //System.out.println(notspam.get(1).getBody());
         BayesianFilter filter = new BayesianFilter();
-        filter.training(notspam, spam);
-        filter.getListaNotSpam().get("your").toString();
-        DataSaver data = new DataSaver();
-        data.saveSpam(filter.getListaSpam());
-        data.saveSpam(filter.getListaNotSpam());
         filter.training(conector.getSpam(20), conector.getNotSpam(20));
-        filter.isSpam(conector.getNotSpam(10));
+        filter.isSpam(conector.getSpam(10));
     }
 
 }
