@@ -191,12 +191,15 @@ public class GmailConnector {
         int contador = 0;
         for (Message message : messages) {
             Message mensaje = service.users().messages().get(user, message.getId()).setFormat("full").execute();
-            if (mensaje.getPayload().getMimeType().equals("multipart/alternative")) {
-                emails.add(new Email(mensaje, true));
-                contador++;
-            }
-            if (contador == cantidad) {
-                break;
+            String type = mensaje.getPayload().getMimeType();
+            if(type == "text/plain" || type == "text/html" || type == "multipart/alternative") {
+                if (contador < cantidad) {
+                    emails.add(new Email(mensaje, true));
+                    contador++;
+                }
+                if (contador == cantidad) {
+                    break;
+                }
             }
         }
         return emails;
@@ -211,11 +214,18 @@ public class GmailConnector {
     }
     public static void main(String[] args) throws IOException {
         GmailConnector conector = new GmailConnector();
-        List<Email> emails = conector.getSpam(10);
-        System.out.println(emails.get(1).getBody());
-        emails = conector.getNewMail();
-        System.out.println(emails.get(1).getBody());
+        List<Email> spam = conector.getSpam(10);
+        //System.out.println(spam.get(1).getBody());
+        List<Email> notspam = conector.getNewMail();
+        //System.out.println(notspam.get(1).getBody());
+        BayesianFilter filter = new BayesianFilter();
+        filter.training(notspam, spam);
+        filter.getListaNotSpam().get("your").toString();
         DataSaver data = new DataSaver();
+        data.saveSpam(filter.getListaSpam());
+        data.saveSpam(filter.getListaNotSpam());
+        filter.training(conector.getSpam(20), conector.getNotSpam(20));
+        filter.isSpam(conector.getNotSpam(10));
     }
 
 }
