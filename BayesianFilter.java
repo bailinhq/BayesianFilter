@@ -4,6 +4,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public class BayesianFilter {
     private double spamThresold = 0.9;
     private double spamProb = 0.3;
@@ -11,15 +14,27 @@ public class BayesianFilter {
     private HashMap<String, WordValue> listaNotSpam;
     private HashMap<String, WordValue> listaSpam;
 
+    /**
+     *
+     */
     public BayesianFilter() {
         listaNotSpam = new HashMap<String, WordValue>();
         listaSpam = new HashMap<String, WordValue>();
     }
 
+    /**
+     * Trains the BayesianFilter by finding the probability of each sordl
+     * @param spam
+     * @param notSpam
+     */
     public void training(List<Email> spam, List<Email> notSpam) {
         setFrequency(spam, notSpam);
     }
 
+    /**
+     * Assigns boolean spam to each email in the list.
+     * @param newMessages
+     */
     public void isSpam(List<Email> newMessages) {
         for (int i = 0; i < newMessages.size(); i++){
             double probability = this.calculateBayProb(newMessages.get(i));
@@ -33,6 +48,11 @@ public class BayesianFilter {
         }
     }
 
+    /**
+     * Calculates the Spam Bayesian Probability of an Email.
+     * @param email
+     * @return probability
+     */
     private double calculateBayProb(Email email) {
         Pattern pattern = Pattern.compile("(?<!\\S)[a-z]+(?!\\S)");
         Matcher matcher = pattern.matcher(email.getBody());
@@ -48,16 +68,24 @@ public class BayesianFilter {
         double denominator1 = 1.0;
         for (String key : keys) {
             if (listaSpam.containsKey(key)) {
-                numerator = numerator * listaSpam.get(key).getFrequency();
+                numerator = numerator * listaSpam.get(key).getProbabiliy();
             }
             if (listaNotSpam.containsKey(key)) {
-                denominator1 = denominator1 * listaNotSpam.get(key).getFrequency();
+                denominator1 = denominator1 * listaNotSpam.get(key).getProbabiliy();
             }
         }
-        double probability = numerator / (denominator1 + numerator);
+        numerator = numerator * spamProb;
+        denominator1 = denominator1 * (1.0 - spamProb);
+        denominator1 += numerator;
+        double probability = numerator / denominator1;
         return probability;
     }
 
+    /**
+     * Loads the HashMap with WordValue objects.
+     * @param spam
+     * @param notSpam
+     */
     private void setFrequency(List<Email> spam, List<Email> notSpam) {
         double word_counter = 0.0;
         for (int i = 0; i < spam.size(); i++) {
@@ -83,11 +111,11 @@ public class BayesianFilter {
             double p = count * 1.0 / word_counter;
             listaSpam.get(key).setProbabiliy(p);
         }
+        word_counter = 0;
         for (int i = 0; i < notSpam.size(); i++) {
             String body = notSpam.get(i).body;
             Pattern pattern = Pattern.compile("(?<!\\S)[a-z]+(?!\\S)");
             Matcher matcher = pattern.matcher(body);
-            if(!body.equals("")) {
                 while (matcher.find()) {
                     String word = body.substring(matcher.start(), matcher.end());
                     word_counter++;
@@ -97,7 +125,6 @@ public class BayesianFilter {
                     } else {
                         listaNotSpam.get(word).increaseCount();
                     }
-                }
             }
         }
         keys = listaNotSpam.keySet();
@@ -110,34 +137,66 @@ public class BayesianFilter {
         }
     }
 
+    /**
+     * Returns the spam threshold.
+     * @return spamThreshold
+     */
     public double getSpamThresold() {
         return spamThresold;
     }
 
+    /**
+     * Returns the probability of spam.
+     * @return spamProb
+     */
     public double getSpamProb() {
         return spamProb;
     }
 
+    /**
+     * Returns the training size.
+     * @return trainingSize
+     */
     public int getTrainingSize() {
         return trainingSize;
     }
 
+    /**
+     * Returns a HashMap with WordValues from not-spam words.
+     * @return listaNotSpam
+     */
     public HashMap<String, WordValue> getListaNotSpam() {
         return listaNotSpam;
     }
 
+    /**
+     * Returns a HashMap with WordValues from nspam words.
+     * @return listaSpam
+     */
     public HashMap<String, WordValue> getListaSpam() {
         return listaSpam;
     }
 
+    /**
+     * Sets the value for spam threshold.
+     * @param spamThresold
+     */
     public void setSpamThresold(double spamThresold) {
         this.spamThresold = spamThresold;
     }
 
+    /**
+     * Sets the value for spam probability.
+     * @param spamProb
+     */
     public void setSpamProb(double spamProb) {
         this.spamProb = spamProb;
     }
 
+    /**
+     * Sets the value for training size.
+     * @param trainingSize
+     */
     public void setTrainingSize(int trainingSize) {
         this.trainingSize = trainingSize;
     }
